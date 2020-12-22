@@ -7,7 +7,7 @@ Test task - Service Registry, Developed by Yii2 Framework, VueJs.
 1) Download 
 
 ```bash
-git clone https://github.com/a7e6j2/test-task-php1222.git
+git clone https://github.com/a7e6j2/test-task22.git
 composer update
 ```
 2) Import the database into the Mysql
