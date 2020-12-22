@@ -7,7 +7,7 @@ Test task - Service Registry, Developed by Yii2 Framework, VueJs.
 1) Download 
 
 ```bash
-git clone https://github.com/a7e6j2/test-task22.git
+git clone https://github.com/a7e6j2/test-task-php1222.git
 composer update
 ```
 2) Import the database into the Mysql
@@ -24,10 +24,10 @@ the database configuration file is located in /config/db.php
 
 ## Demonstration
 
-Website : [http://api-joey.joey.im/test.html](http://api-joey.joey.im/test.html) 
+Website : [http://api-test.joey.im/test.html](http://api-test.joey.im/test.html) 
 
 ## Online APIs Documentation
-Documentation (OpenAPI 3.0) [http://api-joey.joey.im/docs](http://api-joey.joey.im/docs) 
+Documentation (OpenAPI 3.0) [http://api-test.joey.im/docs](http://api-test.joey.im/docs) 
 
 ## Testing
 API testing with codeception, the source code located in ./tests/
