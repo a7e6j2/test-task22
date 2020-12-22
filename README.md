@@ -24,10 +24,10 @@ the database configuration file is located in /config/db.php
 
 ## Demonstration
 
-Website : [http://api.joey.im/test.html](http://api.joey.im/test.html) 
+Website : [http://api-joey.joey.im/test.html](http://api-joey.joey.im/test.html) 
 
 ## Online APIs Documentation
-Documentation (OpenAPI 3.0) [http://api.joey.im/docs](http://api.joey.im/docs) 
+Documentation (OpenAPI 3.0) [http://api-joey.joey.im/docs](http://api-joey.joey.im/docs) 
 
 ## Testing
 API testing with codeception, the source code located in ./tests/
