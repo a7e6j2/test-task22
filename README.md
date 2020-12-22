@@ -44,8 +44,8 @@ By steps
     ├── ...
     ├── api                                # APIs
     │   └── modules                        # Module folder
-    │      └── v1                          # V1.0 folder
-    │          ├── Controller.php          # Custom Controller (extended from Yii2 Rest Controller)
+    │      └── v1                          # V1.0 folde
+    │          ├── Controller.php          # Custom Controller (Setup the response,CORS,Verb filters,Rate limiter and Auth(there's no setting in this case)
     │          ├── controllers             # API controllers folder  
     │          ├── helpers                 # Custom Helpers folder      
     │          ├── models                  # API Models folder      
