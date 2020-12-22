@@ -2,9 +2,9 @@
 
 return [
     'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=localhost;dbname=tavex_db',
-    'username' => 'tavex_db',
-    'password' => 'ishQS=mNYljpi3!6',
+    'dsn' => 'mysql:host=localhost;dbname=DB_NAME',
+    'username' => 'XXXXX',
+    'password' => 'XXXXXX',
     'charset' => 'utf8',
 
     // Schema cache options (for production environment)
