@@ -1,0 +1,16 @@
+{
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }
+    ],
+    "require": {
+        "genxoft/yii2-oas3": "*"
+    },
+    "require-dev": {
+        "codeception/codeception": "^4.1",
+        "codeception/module-rest": "^1.0.0",
+        "codeception/module-phpbrowser": "^1.0.0"
+    }
+}

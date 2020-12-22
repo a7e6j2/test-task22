@@ -1,0 +1,2 @@
+
+{"code":200,"message":"OK","data":{"items":[{"id":45,"serviceName":"Test_Service_0.93581700 1608563954","owner":"Joey","description":"This is a service which created by a test program","createdAt":1608563955,"updatedAt":1608563955,"createdBy":4,"status":1,"createdDatetime":"21-Dec-2020 23:19:15","updatedDatetime":"21-Dec-2020 23:19:15","creatorName":"Eliise","statusText":"ACTIVE"}],"pages":{"totalCount":1,"pageCount":1,"currentPage":1,"perPage":100}}}

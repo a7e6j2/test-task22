@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Test task - Service Registry : Joey Wong</title>
+</head>
+
+<body>
+
+    <!-- component template -->
+    <script type="text/x-template" id="grid-template">
+        <table>
+            <thead>
+                <tr>
+                    <th v-for="key in columns" @click="sortBy(key)" :class="{ active: sortKey == key }">
+                        {{ key | capitalize }}
+                        <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'">
+          </span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="entry in filteredData" @click="editService(entry)">
+                    <td v-for="key in columns">
+                        {{entry[key]}}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </script>
+
+    <!-- template for the modal component -->
+    <script type="text/x-template" id="modal-template">
+        <transition name="modal">
+            <div class="modal-mask">
+                <div class="modal-wrapper">
+                    <div class="modal-container">
+
+                        <div class="modal-header">
+                            <slot name="header">
+                            </slot>
+                        </div>
+
+                        <div class="modal-body">
+
+                            <slot name="body">
+                                <form id="serviceForm" @submit="submitForm" method="post">
+                                    <div v-if="errors.length" class="err-box">
+                                        <b>Please correct the following error(s):</b>
+                                        <ul>
+                                            <li v-for="error in errors">{{ error }}</li>
+                                        </ul>
+                                    </div>
+                                    <input type="hidden" id="id" name="id" v-model="id" />
+                                    <input type="text" id="serviceName" name="serviceName" v-model="serviceName" placeholder="Service Name(Required)" />
+                                    <input type="text" id="owner" name="owner" v-model="owner" placeholder="Owner(Required)" />
+                                    <textarea id="description" name="description" v-model="description" cols="44" rows="5" placeholder="Description(Required)"></textarea>
+                                    <div v-if="editMode"><input type="checkbox" v-model="status" true-value="1" false-value="0"><label for="status">Status</label></div>
+                                    <input type="submit" value="Submit" style="background: #3d1563; color:#fff;height:40px;width:99%;">
+                                    
+                                </form>
+
+                            </slot>
+                        </div>
+
+                        <div class="modal-footer">
+                            <slot name="footer">
+                                <button class="modal-default-button" @click="$emit('close')">
+                X
+              </button>
+                            </slot>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </transition>
+    </script>
+
+
+
+
+    <!-- demo root element -->
+    <div id="demo">
+        <div class="nav-bar">
+            <h1>Test Task - Full Stack Developer</h1>
+            <p>Developer: Joey Wong [jokogane@yahoo.com], Frameworks: Yii2 + Vuejs + Mysql</p>
+        </div>
+        <div class="search-bar">
+            <div class="bar-content">
+                <div class="search-content">
+                    <form id="search">
+                        Search: <input name="query" v-model="searchQuery" class="search-box" @blur="searchBlur">
+                    </form>
+                </div>
+                <div class="nav-content">
+                    <button id="show-modal" @click="addService" class="btn-add">Add Service</button>
+                    <a href="/docs" target="_blank" class="btn-basic">Documentation</a>
+                </div>
+            </div>
+        </div>
+        <demo-grid :data="gridData" :columns="gridColumns" :filter-key="searchQuery">
+        </demo-grid>
+
+        <modal v-if="showModal" @close="showModal = false" :edit-mode="isEdit">
+            <h3 slot="header">{{isEdit ? 'Edit' : 'Add'}} a service</h3>
+
+
+
+        </modal>
+
+
+
+    </div>
+
+
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <link rel="stylesheet" href="css/test-style.css" type="text/css">
+</body>
+
+</html>
+
+<script>
+    //API base URL
+    var baselAPIUrl = 'http://api-test.joey.im/v1/service';
+
+    //register the grid component
+    Vue.component('demo-grid', {
+        template: '#grid-template',
+        props: {
+            data: Array,
+            columns: Array,
+            filterKey: String,
+        },
+        data: function() {
+            var sortOrders = {}
+            this.columns.forEach(function(key) {
+                sortOrders[key] = 1
+            })
+            return {
+                sortKey: '',
+                sortOrders: sortOrders
+            }
+            var previousFilterKey = ''
+        },
+        computed: {
+            filteredData: function() {
+                var sortKey = this.sortKey
+                var filterKey = this.filterKey && this.filterKey.toLowerCase()
+                var order = this.sortOrders[sortKey] || 1
+                var data = this.data
+
+
+                //Search by keyword
+                if (filterKey) {
+
+                    /* Local version
+                    data = data.filter(function(row) {
+                        return Object.keys(row).some(function(key) {
+                            return String(row[key]).toLowerCase().indexOf(filterKey) > -1
+                        })
+                    })*/
+
+                    if (this.previousFilterKey != filterKey) {
+                        //Search record by keyword from remote API
+                        const query = "?keyword=" + filterKey;
+                        axios.get(baselAPIUrl + query).then(response => {
+
+                            if (response.data.code == 200) {
+                                demo.gridData = response.data.data.items
+                                this.previousFilterKey = filterKey
+                            }
+
+                        });
+                    } else {
+
+                        if (filterKey == '') {
+                            demo.loadData()
+                        }
+                    }
+
+
+
+                }
+                if (sortKey) {
+                    data = data.slice().sort(function(a, b) {
+                        a = a[sortKey]
+                        b = b[sortKey]
+                        return (a === b ? 0 : a > b ? 1 : -1) * order
+                    })
+                }
+                return data
+            }
+        },
+
+        filters: {
+            capitalize: function(str) {
+                return str.charAt(0).toUpperCase() + str.slice(1)
+            }
+        },
+        methods: {
+            //Sorting function
+            sortBy: function(key) {
+                /* local version 
+                	this.sortKey = key
+					this.sortOrders[key] = this.sortOrders[key] * -1
+				*/
+
+                //Remote version 
+                const direction = (this.sortOrders[key] * -1) == 1 ? 'DESC' : 'ASC';
+
+                demo.sortData(key, direction)
+                this.sortKey = key
+                this.sortOrders[key] = this.sortOrders[key] * -1
+
+            },
+
+            //Edit specified service with API call
+            editService: function(entry) {
+
+                if (entry['id'] > 0) {
+                    axios.get(baselAPIUrl + '/' + entry['id']).then(response => {
+
+                        if (response.data.code == 200) {
+
+                            demo.isEdit = true
+                            demo.showModal = true
+                            demo.serviceName = response.data.data.serviceName
+                            demo.owner = response.data.data.owner
+                            demo.description = response.data.data.description
+                            demo.sid = response.data.data.id
+                            demo.status = response.data.data.status
+
+
+                        }
+
+                    });
+
+                }
+
+            }
+
+        }
+    });
+
+    //register modal component
+    Vue.component("modal", {
+        template: "#modal-template",
+        data: function() {
+
+            return {
+                errors: [],
+                id: demo.sid,
+                serviceName: demo.serviceName,
+                owner: demo.owner,
+                description: demo.description,
+                status: demo.status,
+            }
+        },
+		props: ['editMode'],
+        methods: {
+
+            //Submit Form with validation
+            submitForm: function(e) {
+
+                this.errors = [];
+
+                if (this.serviceName && this.owner && this.description) {
+
+                    if (demo.isEdit) {
+	                    //Edit Mode
+                        console.log("edit Mode")
+                        axios.post(baselAPIUrl + '/update/' + this.id, {
+                                serviceName: this.serviceName,
+                                owner: this.serviceName,
+                                description: this.description,
+                                status: this.status
+                            })
+                            .then(function(response) {
+                                demo.loadData();
+                                demo.showModal = false
+                            })
+                            .catch(function(error) {
+                                alert('The service name is duplicated or the required fields are not fulfilled')
+                            });
+
+
+                    } else {
+                        
+                        //Create Service 
+                        console.log("create mode")
+                        axios.post(baselAPIUrl + '/create', {
+                                serviceName: this.serviceName,
+                                owner: this.serviceName,
+                                description: this.description
+                            })
+                            .then(function(response) {
+                                demo.loadData();
+                                demo.showModal = false
+                            })
+                            .catch(function(error) {
+                                alert('The service name is duplicated or the required fields are not fulfilled')
+                            });
+                    }
+
+                }
+
+
+
+                if (!this.serviceName) {
+                    this.errors.push('Service name required.');
+                }
+                if (!this.owner) {
+                    this.errors.push('Owner required.');
+                }
+                if (!this.description) {
+                    this.errors.push('Description required.');
+                }
+
+                e.preventDefault()
+            },
+
+        },
+        mounted() {}
+
+
+    });
+
+
+
+
+    var demo = new Vue({
+        el: '#demo',
+        data() {
+            return {
+
+                showModal: false,
+                searchQuery: '',
+
+                //Define the fields name for display
+                gridColumns: ['id', 'serviceName', 'owner', 'creatorName', 'createdDatetime', 'updatedDatetime', 'statusText'],
+                gridData: null,
+                isEdit: false,
+                rowData: null,
+                serviceName: '',
+                owner: '',
+                sid: 0,
+                status: 1,
+            }
+        },
+        mounted() {
+            this.loadData();
+        },
+        methods: {
+
+            //Load initial data into the grid view
+            loadData: function() {
+                axios.get(baselAPIUrl).then(response => {
+
+                    if (response.data.code == 200) {
+                        this.gridData = response.data.data.items;
+                    }
+
+                });
+            },
+            //Sort data from remote API
+            sortData: function(sortField, direction) {
+
+                const query = "?sort=" + (direction == 'ASC' ? '+' : '-') + sortField;
+                axios.get(baselAPIUrl + query).then(response => {
+
+                    if (response.data.code == 200) {
+                        this.gridData = response.data.data.items;
+                    }
+
+                });
+
+            },
+            //Reset the data for adding service
+            addService: function() {
+                this.serviceName = ''
+                this.id = 0
+                this.owner = '',
+                this.description = ''
+                this.isEdit = false
+                this.showModal = true
+            },
+            //Search box on blur handler
+            searchBlur: function() {
+
+                if (this.searchQuery == '') {
+                    demo.loadData()
+                }
+            }
+        }
+
+    });
+</script>
