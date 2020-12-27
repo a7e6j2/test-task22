@@ -193,7 +193,7 @@ class ServiceController extends Controller
 
 
     /**
-     * @OA\Post(path="/service/update/{id}",
+     * @OA\Put(path="/service/update/{id}",
      *   summary="Update a service, replace the {id} with your service id",
      *   tags={"service"},
      *   @OA\Parameter(name="id",
